@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>VRR eInk Display — Wemos D1 Mini → Waveshare ePaper</title>
+<style>
+  body {
+    margin: 0;
+    padding: 40px 20px;
+    background: #1a1a1a;
+    color: #eee;
+    font-family: -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h1 { font-weight: 400; margin: 0 0 8px; }
+  .sub { color: #888; margin-bottom: 28px; font-size: 14px; }
+  svg { background: #222; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,.5); }
+  table { border-collapse: collapse; margin-top: 24px; font-size: 14px; }
+  th, td { padding: 8px 14px; border-bottom: 1px solid #333; text-align: left; }
+  th { color: #888; font-weight: 500; }
+  td.pin { font-family: monospace; color: #6cf; }
+  td.fn { color: #fc6; font-family: monospace; }
+  .swatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px; margin-right: 8px; vertical-align: middle; border: 1px solid #444; }
+</style>
+</head>
+<body>
+
+<h1>VRR eInk Display — Wiring</h1>
+<div class="sub">Wemos D1 Mini (ESP8266) ↔ Waveshare 2.9" ePaper (296×128)</div>
+
+<svg width="820" height="480" viewBox="0 0 820 480">
+  <rect x="60" y="80" width="220" height="320" rx="10" fill="#0a3b5c" stroke="#6cf" stroke-width="2"/>
+  <text x="170" y="110" text-anchor="middle" fill="#6cf" font-family="sans-serif" font-size="16" font-weight="bold">Wemos D1 Mini</text>
+  <text x="170" y="128" text-anchor="middle" fill="#8ad" font-family="sans-serif" font-size="11">ESP8266</text>
+
+  <!-- D1 Mini pin labels — ordered top→bottom: BUSY, RST, DC, CS, CLK, DIN, GND, VCC -->
+  <g font-family="monospace" font-size="12" fill="#eee">
+    <circle cx="280" cy="160" r="4" fill="#c6f"/><text x="270" y="164" text-anchor="end">D2 / GPIO4</text>
+    <circle cx="280" cy="190" r="4" fill="#fff"/><text x="270" y="194" text-anchor="end">D0 / GPIO16</text>
+    <circle cx="280" cy="220" r="4" fill="#6f6"/><text x="270" y="224" text-anchor="end">D3 / GPIO0</text>
+    <circle cx="280" cy="250" r="4" fill="#f83"/><text x="270" y="254" text-anchor="end">D1 / GPIO5</text>
+    <circle cx="280" cy="280" r="4" fill="#ff3"/><text x="270" y="284" text-anchor="end">D5 / GPIO14</text>
+    <circle cx="280" cy="310" r="4" fill="#39f"/><text x="270" y="314" text-anchor="end">D7 / GPIO13</text>
+    <circle cx="280" cy="340" r="4" fill="#a0522d"/><text x="270" y="344" text-anchor="end">GND</text>
+    <circle cx="280" cy="370" r="4" fill="#aaa"/><text x="270" y="374" text-anchor="end">3V3</text>
+  </g>
+
+  <rect x="540" y="80" width="220" height="320" rx="10" fill="#2a2a2a" stroke="#ccc" stroke-width="2"/>
+  <rect x="560" y="100" width="180" height="80" rx="2" fill="#f5f5f0" stroke="#888"/>
+  <text x="650" y="145" text-anchor="middle" fill="#222" font-family="sans-serif" font-size="13" font-weight="bold">ePaper 2.9"</text>
+  <text x="650" y="162" text-anchor="middle" fill="#222" font-family="sans-serif" font-size="10">296 × 128</text>
+
+  <!-- ePaper pins — same order: BUSY, RST, DC, CS, CLK, DIN, GND, VCC -->
+  <g font-family="monospace" font-size="12" fill="#eee">
+    <circle cx="540" cy="200" r="4" fill="#c6f"/><text x="550" y="204">BUSY</text>
+    <circle cx="540" cy="222" r="4" fill="#fff"/><text x="550" y="226">RST</text>
+    <circle cx="540" cy="244" r="4" fill="#6f6"/><text x="550" y="248">DC</text>
+    <circle cx="540" cy="266" r="4" fill="#f83"/><text x="550" y="270">CS</text>
+    <circle cx="540" cy="288" r="4" fill="#ff3"/><text x="550" y="292">CLK (SCK)</text>
+    <circle cx="540" cy="310" r="4" fill="#39f"/><text x="550" y="314">DIN (MOSI)</text>
+    <circle cx="540" cy="332" r="4" fill="#a0522d"/><text x="550" y="336">GND</text>
+    <circle cx="540" cy="354" r="4" fill="#aaa"/><text x="550" y="358">VCC</text>
+  </g>
+
+  <g fill="none" stroke-width="2.5" opacity="0.95">
+    <path d="M 280 160 C 400 160, 420 200, 540 200" stroke="#c6f"/>
+    <path d="M 280 190 C 400 190, 420 222, 540 222" stroke="#fff"/>
+    <path d="M 280 220 C 400 220, 420 244, 540 244" stroke="#6f6"/>
+    <path d="M 280 250 C 400 250, 420 266, 540 266" stroke="#f83"/>
+    <path d="M 280 280 C 400 280, 420 288, 540 288" stroke="#ff3"/>
+    <path d="M 280 310 C 400 310, 420 310, 540 310" stroke="#39f"/>
+    <path d="M 280 340 C 400 340, 420 332, 540 332" stroke="#a0522d"/>
+    <path d="M 280 370 C 400 370, 420 354, 540 354" stroke="#aaa"/>
+  </g>
+
+  <text x="410" y="430" text-anchor="middle" fill="#666" font-size="11" font-family="sans-serif">
+    SPI: DIN/CLK are fixed on ESP8266 hardware SPI — do not relocate
+  </text>
+</svg>
+
+<table>
+  <tr><th>Wemos D1 Mini</th><th>GPIO</th><th>→</th><th>ePaper</th><th>Wire</th><th>Code symbol</th></tr>
+  <tr><td class="pin">D2</td><td>GPIO4</td><td>→</td><td class="pin">BUSY</td><td><span class="swatch" style="background:#c6f"></span>purple</td><td class="fn">EPD_BUSY</td></tr>
+  <tr><td class="pin">D0</td><td>GPIO16</td><td>→</td><td class="pin">RST</td><td><span class="swatch" style="background:#fff"></span>white</td><td class="fn">EPD_RST</td></tr>
+  <tr><td class="pin">D3</td><td>GPIO0</td><td>→</td><td class="pin">DC</td><td><span class="swatch" style="background:#6f6"></span>green</td><td class="fn">EPD_DC</td></tr>
+  <tr><td class="pin">D1</td><td>GPIO5</td><td>→</td><td class="pin">CS</td><td><span class="swatch" style="background:#f83"></span>orange</td><td class="fn">EPD_CS</td></tr>
+  <tr><td class="pin">D5</td><td>GPIO14</td><td>→</td><td class="pin">CLK (SCK)</td><td><span class="swatch" style="background:#ff3"></span>yellow</td><td class="fn">HW SPI</td></tr>
+  <tr><td class="pin">D7</td><td>GPIO13</td><td>→</td><td class="pin">DIN (MOSI)</td><td><span class="swatch" style="background:#39f"></span>blue</td><td class="fn">HW SPI</td></tr>
+  <tr><td class="pin">GND</td><td>—</td><td>→</td><td class="pin">GND</td><td><span class="swatch" style="background:#a0522d"></span>brown</td><td>—</td></tr>
+  <tr><td class="pin">3V3</td><td>—</td><td>→</td><td class="pin">VCC</td><td><span class="swatch" style="background:#aaa"></span>grey</td><td>—</td></tr>
+</table>
+
+</body>
+</html>
