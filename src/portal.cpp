@@ -29,9 +29,9 @@ static void persistParams() {
 static void setupOnce() {
     if (pCity) return;
 
-    pCity = new WiFiManagerParameter("city", "Stop city",
+    pCity = new WiFiManagerParameter("city", "Stop city (as shown on vrr.de)",
         g_stop_city, sizeof(g_stop_city) - 1);
-    pName = new WiFiManagerParameter("name", "Stop name",
+    pName = new WiFiManagerParameter("name", "Stop name (as shown on vrr.de)",
         g_stop_name, sizeof(g_stop_name) - 1);
     pTitle = new WiFiManagerParameter("title", "Device title",
         g_device_title, sizeof(g_device_title) - 1);
@@ -50,10 +50,17 @@ static void setupOnce() {
     snprintf(refreshHtml + pos, sizeof(refreshHtml) - pos, "</select>");
     pRefresh = new WiFiManagerParameter(refreshHtml);
 
+    static WiFiManagerParameter info(
+        "<br/><hr/><p style='font-size:small'>"
+        "Find stop names, docs &amp; license info at<br/>"
+        "<a href='https://github.com/laserir/vrr-eink-display' target='_blank'>"
+        "github.com/laserir/vrr-eink-display</a></p>");
+
     wm.addParameter(pCity);
     wm.addParameter(pName);
     wm.addParameter(pTitle);
     wm.addParameter(pRefresh);
+    wm.addParameter(&info);
 
     wm.setConfigPortalTimeout(PORTAL_TIMEOUT_SEC);
     std::vector<const char*> menu = {"wifi", "param", "sep", "restart", "exit"};

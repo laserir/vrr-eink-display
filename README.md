@@ -74,7 +74,7 @@ There are two ways to reach the configuration:
 
 ## Finding your stop name
 
-VRR's openservice API matches `name_dm` against what's in their own database. Usually the German stop name works directly (`Hauptbahnhof`, `Rüttenscheider Stern`, etc.). If nothing shows up, try the name used on [vrr.de](https://www.vrr.de/) route planning.
+VRR's openservice API matches `name_dm` against what's in their own database. To find the exact name, open [vrr.de](https://www.vrr.de/), type your stop into the route planner, and use the name and city as they appear in the autocomplete suggestions. Usually the German stop name works directly (`Hauptbahnhof`, `Rüttenscheider Stern`, etc.).
 
 ## Libraries used
 
