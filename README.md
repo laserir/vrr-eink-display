@@ -2,6 +2,8 @@
 
 A tiny battery-friendly departure monitor for VRR (Verkehrsverbund Rhein-Ruhr) stops in Germany's Ruhr area. Runs on a Wemos D1 Mini (ESP8266) and a Waveshare 2.9" 3-color ePaper, and renders the next departures from any VRR stop.
 
+![VRR eInk Display showing departures from Ruettenscheider Stern](docs/photo.jpg)
+
 Configuration is done through a captive portal — no recompiling to change stops, no secrets baked into firmware.
 
 ## Features
