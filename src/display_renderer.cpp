@@ -119,11 +119,11 @@ static String fitText(const String& s, int maxW) {
 }
 
 static void drawRow(int y, const Departure& d) {
-    // Line number (bold, black)
+    // Line number (bold, black), truncate if wider than column
     epd.setFont(&FreeSansBold9pt7b);
     epd.setTextColor(GxEPD_BLACK);
     epd.setCursor(COL_LINE_X, y + 13);
-    epd.print(deUmlaut(d.lineNumber));
+    epd.print(fitText(deUmlaut(d.lineNumber), COL_LINE_W));
 
     // Destination (regular)
     epd.setFont(&FreeSans9pt7b);
