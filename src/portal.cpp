@@ -10,6 +10,7 @@ static WiFiManagerParameter* pCity = nullptr;
 static WiFiManagerParameter* pName = nullptr;
 static WiFiManagerParameter* pTitle = nullptr;
 static WiFiManagerParameter* pRefresh = nullptr;
+static char s_refreshBuf[4];
 static bool s_webPortalActive = false;
 
 static void persistParams() {
@@ -19,7 +20,7 @@ static void persistParams() {
     g_stop_name[sizeof(g_stop_name) - 1] = '\0';
     strncpy(g_device_title, pTitle->getValue(), sizeof(g_device_title) - 1);
     g_device_title[sizeof(g_device_title) - 1] = '\0';
-    int r = atoi(wm.server->arg("refresh").c_str());
+    int r = atoi(pRefresh->getValue());
     if (r <= 0) r = DEFAULT_REFRESH_MIN;
     g_refresh_min = refreshMinSanitize(r);
     runtimeConfigSave();
@@ -29,26 +30,36 @@ static void persistParams() {
 static void setupOnce() {
     if (pCity) return;
 
-    pCity = new WiFiManagerParameter("city", "Stop city (as shown on vrr.de)",
+    pCity = new WiFiManagerParameter("city", "Stop city (exact spelling as on vrr.de)",
         g_stop_city, sizeof(g_stop_city) - 1);
-    pName = new WiFiManagerParameter("name", "Stop name (as shown on vrr.de)",
+    pName = new WiFiManagerParameter("name", "Stop name (exact spelling as on vrr.de)",
         g_stop_name, sizeof(g_stop_name) - 1);
     pTitle = new WiFiManagerParameter("title", "Device title",
         g_device_title, sizeof(g_device_title) - 1);
 
-    // Build <select> dropdown with current value pre-selected
-    static char refreshHtml[512];
+    // Dropdown for refresh interval, following WiFiManager custom HTML pattern:
+    // 1) Hidden standard param stores the value WiFiManager reads back
+    // 2) Custom HTML param renders the visible <select> and syncs via JS
+    snprintf(s_refreshBuf, sizeof(s_refreshBuf), "%d", g_refresh_min);
+    pRefresh = new WiFiManagerParameter("refresh", "refresh", s_refreshBuf, 3);
+
+    static char selectHtml[640];
     const int opts[] = {1, 3, 5, 10, 30, 60};
-    int pos = snprintf(refreshHtml, sizeof(refreshHtml),
-        "<br/><label for='refresh'>Refresh interval (minutes)</label>"
-        "<select id='refresh' name='refresh'>");
+    int pos = snprintf(selectHtml, sizeof(selectHtml),
+        "<br/><label for='s'>Refresh (min)</label>"
+        "<select id='s' onchange=\"document.getElementById('refresh').value=this.value\">");
     for (int i = 0; i < 6; i++) {
-        pos += snprintf(refreshHtml + pos, sizeof(refreshHtml) - pos,
-            "<option value='%d'%s>%d</option>",
-            opts[i], (opts[i] == g_refresh_min) ? " selected" : "", opts[i]);
+        pos += snprintf(selectHtml + pos, sizeof(selectHtml) - pos,
+            "<option value='%d'>%d</option>", opts[i], opts[i]);
     }
-    snprintf(refreshHtml + pos, sizeof(refreshHtml) - pos, "</select>");
-    pRefresh = new WiFiManagerParameter(refreshHtml);
+    snprintf(selectHtml + pos, sizeof(selectHtml) - pos,
+        "</select>"
+        "<script>"
+        "document.getElementById('s').value=document.getElementById('refresh').value;"
+        "document.querySelector(\"[for='refresh']\").hidden=true;"
+        "document.getElementById('refresh').hidden=true;"
+        "</script>");
+    static WiFiManagerParameter selectParam(selectHtml);
 
     static WiFiManagerParameter info(
         "<br/><hr/><p style='font-size:small'>"
@@ -60,10 +71,11 @@ static void setupOnce() {
     wm.addParameter(pName);
     wm.addParameter(pTitle);
     wm.addParameter(pRefresh);
+    wm.addParameter(&selectParam);
     wm.addParameter(&info);
 
     wm.setConfigPortalTimeout(PORTAL_TIMEOUT_SEC);
-    std::vector<const char*> menu = {"wifi", "param", "sep", "restart", "exit"};
+    std::vector<const char*> menu = {"param", "wifi", "sep", "restart", "exit"};
     wm.setMenu(menu);
     wm.setSaveConfigCallback(persistParams);
     wm.setSaveParamsCallback(persistParams);

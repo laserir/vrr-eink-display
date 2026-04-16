@@ -94,12 +94,15 @@ bool fetchDepartures(Departure* deps, int& count, int maxDepartures) {
     time_t now;
     time(&now);
     String cityPrefix = String(g_stop_city) + " ";
+    String commaPrefix = String(g_stop_city) + ", ";
 
     for (JsonObject ev : events) {
         const char* plannedStr = ev["departureTimePlanned"];
         const char* estimatedStr = ev["departureTimeEstimated"];
-        const char* lineNum = ev["transportation"]["number"];
-        const char* dest = ev["transportation"]["destination"]["name"];
+        JsonObject transport = ev["transportation"];
+        if (!transport) continue;
+        const char* lineNum = transport["number"];
+        const char* dest = transport["destination"]["name"];
 
         if (!plannedStr || !lineNum || !dest) continue;
 
@@ -115,7 +118,6 @@ bool fetchDepartures(Departure* deps, int& count, int maxDepartures) {
         if (destStr.startsWith(cityPrefix)) {
             destStr = destStr.substring(cityPrefix.length());
         } else {
-            String commaPrefix = String(g_stop_city) + ", ";
             if (destStr.startsWith(commaPrefix)) {
                 destStr = destStr.substring(commaPrefix.length());
             }

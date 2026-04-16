@@ -1,6 +1,6 @@
 #include "time_sync.h"
 
-void syncTime(const char* tzInfo, const char* ntpServer) {
+bool syncTime(const char* tzInfo, const char* ntpServer) {
     Serial.print("Syncing NTP...");
     configTime(tzInfo, ntpServer);
 
@@ -13,13 +13,14 @@ void syncTime(const char* tzInfo, const char* ntpServer) {
     }
     if (now < 100000) {
         Serial.println(" FAILED");
-        return;
+        return false;
     }
     struct tm ti;
     localtime_r(&now, &ti);
     char buf[20];
     strftime(buf, sizeof(buf), "%H:%M:%S", &ti);
     Serial.printf(" OK (%s)\n", buf);
+    return true;
 }
 
 time_t parseISO8601(const char* str) {

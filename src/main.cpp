@@ -88,11 +88,10 @@ void setup() {
 
     Serial.printf("WiFi connected: %s\n", WiFi.localIP().toString().c_str());
 
-    syncTime(TZ_INFO, NTP_SERVER);
-    timeSynced = true;
+    timeSynced = syncTime(TZ_INFO, NTP_SERVER);
 
     portalStartWebPortal();
-    fetchAndRender();
+    if (timeSynced) fetchAndRender();
 }
 
 void loop() {
@@ -107,8 +106,8 @@ void loop() {
             ESP.restart();
         }
         if (!timeSynced) {
-            syncTime(TZ_INFO, NTP_SERVER);
-            timeSynced = true;
+            timeSynced = syncTime(TZ_INFO, NTP_SERVER);
+            if (!timeSynced) return;
         }
         fetchAndRender();
     }

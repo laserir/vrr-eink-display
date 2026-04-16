@@ -2,5 +2,5 @@
 #include <Arduino.h>
 #include <time.h>
 
-void syncTime(const char* tzInfo, const char* ntpServer);
+bool syncTime(const char* tzInfo, const char* ntpServer);
 time_t parseISO8601(const char* str);
