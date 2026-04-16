@@ -5,6 +5,7 @@
 #include <ArduinoJson.h>
 #include <ESP8266HTTPClient.h>
 #include <WiFiClientSecureBearSSL.h>
+#include <math.h>
 
 static time_t depTime(const Departure& d) {
     return d.estimatedTime ? d.estimatedTime : d.plannedTime;
@@ -113,11 +114,16 @@ bool fetchDepartures(Departure* deps, int& count, int maxDepartures) {
         String destStr = dest;
         if (destStr.startsWith(cityPrefix)) {
             destStr = destStr.substring(cityPrefix.length());
+        } else {
+            String commaPrefix = String(g_stop_city) + ", ";
+            if (destStr.startsWith(commaPrefix)) {
+                destStr = destStr.substring(commaPrefix.length());
+            }
         }
         d.destination = destStr;
         d.plannedTime = planned;
         d.estimatedTime = estimated;
-        d.delayMinutes = estimated ? (int)difftime(estimated, planned) / 60 : 0;
+        d.delayMinutes = estimated ? (int)floor(difftime(estimated, planned) / 60.0) : 0;
 
         insertSorted(deps, count, maxDepartures, d);
     }
